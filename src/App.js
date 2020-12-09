@@ -1,25 +1,71 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './App.css';
+import Header from './components/Header';
+import Body from './components/Body';
 
-function App() {
+const App = () => {
+  //search item
+  const [search, setSearch] = useState('');
+  //videos lists
+  const [data, setData] = useState([]);
+  // current video
+  const [currentVideo, setCurrentVideo] = useState({});
+  //isLoading
+  const [isLoading, setisLoading] = useState(true);
+  //video embed snippet
+  //<iframe width="972" height="547" src="https://www.youtube.com/embed/IVgFHQeS1vk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  //function
+  const searchData = (text) => {
+    setSearch(text);
+    axios
+      .get('https://www.googleapis.com/youtube/v3/search', {
+        params: {
+          q: search,
+          maxResults: 15,
+          key: <Your_Api_Key>,
+          part: 'snippet',
+        },
+      })
+      .then((videos) => {
+        const videosFiltered = filterVideos(videos.data.items);
+        setData(videosFiltered);
+        setCurrentVideo(videosFiltered[0]);
+        setisLoading(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const filterVideos = (videoList) => {
+    const filteredVideos = [];
+
+    videoList.map((video) => {
+      if (video.id.kind === 'youtube#video') {
+        filteredVideos.push(video);
+      }
+    });
+
+    return filteredVideos;
+  };
+
+  const changeCurrentVideo = (video) => {
+    setCurrentVideo(video);
+  };
+
+  useEffect(() => {
+    searchData('Fullyworld web Tutorials');
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header search={searchData} />
+      <Body
+        currentVideo={currentVideo}
+        isLoading={isLoading}
+        videos={data}
+        changeCurrentVideo={changeCurrentVideo}
+      />
     </div>
   );
-}
+};
 
 export default App;
