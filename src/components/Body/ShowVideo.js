@@ -1,7 +1,6 @@
 import React from 'react';
 
 const ShowVideo = ({ currentVideo, isLoading }) => {
-  console.log(currentVideo);
   return (
     <div
       className="col-md-7 border pt-1"

@@ -23,7 +23,7 @@ const App = () => {
         params: {
           q: search,
           maxResults: 15,
-          key: <Your_Api_Key>,
+          key: process.env.React_App_Youtube_Api,
           part: 'snippet',
         },
       })
@@ -39,10 +39,11 @@ const App = () => {
   const filterVideos = (videoList) => {
     const filteredVideos = [];
 
-    videoList.map((video) => {
+    videoList.map(function (video) {
       if (video.id.kind === 'youtube#video') {
         filteredVideos.push(video);
       }
+      return false;
     });
 
     return filteredVideos;
@@ -54,6 +55,7 @@ const App = () => {
 
   useEffect(() => {
     searchData('Fullyworld web Tutorials');
+    //eslint-disable-next-line
   }, []);
   return (
     <div className="App">
